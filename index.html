@@ -1,0 +1,246 @@
+import React, { useState } from 'react';
+import { 
+  Users, 
+  Brain, 
+  MapPin, 
+  Layers, 
+  Puzzle, 
+  UserCheck, 
+  BookOpen, 
+  Lightbulb,
+  ArrowRight,
+  Info
+} from 'lucide-react';
+
+const learningData = [
+  {
+    id: 'srl',
+    title: 'Self-Regulated Learning',
+    icon: UserCheck,
+    color: 'bg-blue-500',
+    lightColor: 'bg-blue-50',
+    textColor: 'text-blue-600',
+    focus: 'Siswa mengatur tujuan, memantau kemajuan, dan merefleksikan cara belajar mereka sendiri.',
+    examples: [
+      { title: 'Jurnal Refleksi', desc: 'Siswa menganalisis kesalahan ujian mereka sendiri dan menyusun strategi perbaikan.' },
+      { title: 'Target Mingguan', desc: 'Siswa membuat "To-Do List" belajar mandiri di awal pekan dan memantaunya.' },
+      { title: 'Pilihan Sumber', desc: 'Siswa bebas memilih media belajar (Video/Buku/Artikel) sesuai gaya belajar.' },
+      { title: 'Manajemen Proyek', desc: 'Siswa membuat timeline/gantt chart sendiri untuk tugas jangka panjang.' },
+      { title: 'Self-Assessment', desc: 'Siswa menilai tugas sendiri menggunakan rubrik sebelum dikumpulkan.' }
+    ]
+  },
+  {
+    id: 'concept',
+    title: 'Concept-based Learning',
+    icon: Lightbulb,
+    color: 'bg-purple-500',
+    lightColor: 'bg-purple-50',
+    textColor: 'text-purple-600',
+    focus: 'Memahami "Ide Besar" atau prinsip universal yang bisa ditransfer ke situasi lain.',
+    examples: [
+      { title: 'Konsep "Perubahan"', desc: 'Menghubungkan perubahan wujud zat (Sains) dengan revolusi sosial (Sejarah).' },
+      { title: 'Konsep "Sistem"', desc: 'Membandingkan sistem tubuh manusia dengan sistem transportasi kota.' },
+      { title: 'Konsep "Kekuasaan"', desc: 'Menganalisis novel Animal Farm untuk memahami sifat kekuasaan, bukan sekadar cerita.' },
+      { title: 'Konsep "Siklus"', desc: 'Mempelajari pola berulang pada siklus air dan siklus ekonomi.' },
+      { title: 'Konsep "Identitas"', desc: 'Karya seni yang mencerminkan diri setelah diskusi tentang budaya dan keluarga.' }
+    ]
+  },
+  {
+    id: 'contextual',
+    title: 'Contextual Learning',
+    icon: MapPin,
+    color: 'bg-green-500',
+    lightColor: 'bg-green-50',
+    textColor: 'text-green-600',
+    focus: 'Menghubungkan materi pelajaran dengan situasi dunia nyata (real-world) yang relevan.',
+    examples: [
+      { title: 'Aritmatika Sosial', desc: 'Belajar diskon dan perbandingan harga langsung di kantin atau supermarket.' },
+      { title: 'Fisika Taman Bermain', desc: 'Belajar gaya gesek dan tuas melalui jungkat-jungkit dan perosotan.' },
+      { title: 'Teks Prosedur', desc: 'Membuat tutorial video "Cara Edit Video" atau hal yang dekat dengan hobi siswa.' },
+      { title: 'Biologi Lingkungan', desc: 'Mengambil sampel air selokan sekolah untuk meneliti pencemaran.' },
+      { title: 'Ekonomi Riil', desc: 'Wawancara pedagang kaki lima untuk memahami modal dan keuntungan.' }
+    ]
+  },
+  {
+    id: 'collaborative',
+    title: 'Collaborative Learning',
+    icon: Users,
+    color: 'bg-orange-500',
+    lightColor: 'bg-orange-50',
+    textColor: 'text-orange-600',
+    focus: 'Kerja sama tim untuk tujuan bersama, keberhasilan individu bergantung pada kelompok.',
+    highlight: true, // Marker for your specific case
+    examples: [
+      { title: 'Proyek Kebun Sekolah', desc: 'Siswa berdiskusi merencanakan jenis tanaman, jadwal, dan panen (Sesuai Studi Kasus Anda).', isSpecial: true },
+      { title: 'Metode Jigsaw', desc: 'Tim ahli mempelajari bagian materi lalu mengajarkan ke kelompok asal.' },
+      { title: 'Think-Pair-Share', desc: 'Berpikir sendiri, diskusi dengan teman sebangku, lalu berbagi ke kelas.' },
+      { title: 'Debat Tim', desc: 'Menyusun argumen pro/kontra secara kolektif mengenai isu terkini.' },
+      { title: 'Peer Editing', desc: 'Siswa saling mengoreksi dan memberi masukan pada tulisan teman.' }
+    ]
+  },
+  {
+    id: 'differentiated',
+    title: 'Differentiated Learning',
+    icon: Layers,
+    color: 'bg-pink-500',
+    lightColor: 'bg-pink-50',
+    textColor: 'text-pink-600',
+    focus: 'Menyesuaikan konten, proses, atau produk berdasarkan kebutuhan siswa yang berbeda.',
+    examples: [
+      { title: 'Diferensiasi Produk', desc: 'Tugas boleh dikumpulkan sebagai esai, podcast, atau video.' },
+      { title: 'Diferensiasi Konten', desc: 'Menyediakan bacaan dengan 3 tingkat kesulitan (Basic, Med, Adv).' },
+      { title: 'Learning Station', desc: 'Pojok visual (gambar) dan pojok kinestetik (alat peraga) di satu kelas.' },
+      { title: 'Diferensiasi Minat', desc: 'Belajar statistik dengan data sepak bola atau data resep masakan.' },
+      { title: 'Lingkungan Belajar', desc: 'Pilihan tempat mengerjakan: hening di perpus atau diskusi di taman.' }
+    ]
+  },
+  {
+    id: 'interdisciplinary',
+    title: 'Interdisciplinary Learning',
+    icon: Puzzle,
+    color: 'bg-teal-500',
+    lightColor: 'bg-teal-50',
+    textColor: 'text-teal-600',
+    focus: 'Menggabungkan dua atau lebih mata pelajaran untuk memecahkan satu tema.',
+    examples: [
+      { title: 'Tema Perubahan Iklim', desc: 'Gabungan Sains (efek rumah kaca), Geografi (peta), dan Ekonomi.' },
+      { title: 'Kuliner Tradisional', desc: 'Gabungan Kimia (ragi), Matematika (takaran), dan Sejarah (asal-usul).' },
+      { title: 'STEM Jembatan', desc: 'Fisika (struktur), Matematika (geometri), dan Seni (desain).' },
+      { title: 'Analisis Novel Sejarah', desc: 'Bahasa (unsur intrinsik) dan Sejarah (fakta latar belakang).' },
+      { title: 'Proyek Ekowisata', desc: 'Seni (brosur), Matematika (harga paket), dan Biologi (flora/fauna).' }
+    ]
+  }
+];
+
+export default function LearningStrategiesApp() {
+  const [activeTab, setActiveTab] = useState('collaborative'); // Default to your case
+
+  const activeData = learningData.find(d => d.id === activeTab);
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-indigo-100">
+      
+      {/* Header */}
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center gap-3">
+          <div className="bg-indigo-600 p-2 rounded-lg">
+            <BookOpen className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-slate-900">EduStrategy Guide</h1>
+            <p className="text-xs text-slate-500">Katalog Pendekatan Pembelajaran Modern</p>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-6xl mx-auto px-4 py-8 flex flex-col lg:flex-row gap-8">
+        
+        {/* Sidebar Navigation */}
+        <nav className="lg:w-1/4 flex-shrink-0">
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden sticky top-24">
+            <div className="p-4 bg-slate-100 border-b border-slate-200">
+              <h2 className="font-semibold text-slate-700">Pilih Pendekatan</h2>
+            </div>
+            <div className="flex flex-col">
+              {learningData.map((item) => {
+                const Icon = item.icon;
+                const isActive = activeTab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveTab(item.id)}
+                    className={`flex items-center gap-3 px-4 py-4 text-left transition-all duration-200 border-l-4 hover:bg-slate-50
+                      ${isActive 
+                        ? `border-${item.color.replace('bg-', '')} bg-indigo-50/50` 
+                        : 'border-transparent text-slate-600'
+                      }`}
+                  >
+                    <Icon className={`w-5 h-5 ${isActive ? item.textColor : 'text-slate-400'}`} />
+                    <span className={`text-sm font-medium ${isActive ? 'text-slate-900' : ''}`}>
+                      {item.title}
+                    </span>
+                    {item.highlight && !isActive && (
+                      <span className="ml-auto w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </nav>
+
+        {/* Main Content Area */}
+        <section className="flex-1">
+          {/* Hero Banner for Active Tab */}
+          <div className={`rounded-2xl p-6 mb-6 ${activeData.lightColor} border border-slate-100 transition-colors duration-300`}>
+            <div className="flex items-start gap-4">
+              <div className={`p-3 rounded-xl ${activeData.color} text-white shadow-lg shadow-${activeData.color}/20`}>
+                <activeData.icon className="w-8 h-8" />
+              </div>
+              <div>
+                <h2 className={`text-2xl font-bold ${activeData.textColor} mb-2`}>{activeData.title}</h2>
+                <p className="text-slate-700 text-lg leading-relaxed">{activeData.focus}</p>
+                
+                {activeData.id === 'collaborative' && (
+                   <div className="mt-4 inline-flex items-center gap-2 px-3 py-1 bg-white rounded-full text-xs font-semibold text-orange-600 border border-orange-200 shadow-sm">
+                      <Info className="w-3 h-3" />
+                      Rekomendasi untuk Kasus Anda
+                   </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Examples Grid */}
+          <div>
+            <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+              <span className="w-1 h-6 bg-slate-800 rounded-full"></span>
+              5 Contoh Penerapan
+            </h3>
+            
+            <div className="grid md:grid-cols-2 gap-4">
+              {activeData.examples.map((example, index) => (
+                <div 
+                  key={index} 
+                  className={`group bg-white p-5 rounded-xl border transition-all duration-200 hover:shadow-md
+                    ${example.isSpecial 
+                      ? 'border-orange-300 ring-2 ring-orange-100 shadow-orange-100' 
+                      : 'border-slate-200 hover:border-indigo-300'
+                    }`}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className={`font-bold ${example.isSpecial ? 'text-orange-700' : 'text-slate-800'}`}>
+                      {example.title}
+                    </h4>
+                    <span className="text-xs font-mono text-slate-300 group-hover:text-indigo-400">0{index + 1}</span>
+                  </div>
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    {example.desc}
+                  </p>
+                  
+                  {example.isSpecial && (
+                    <div className="mt-3 text-xs font-semibold text-orange-600 bg-orange-50 inline-block px-2 py-1 rounded border border-orange-100">
+                      Relevan dengan Kartu Kebun Mini
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Action Footer */}
+          <div className="mt-8 bg-slate-900 rounded-xl p-6 text-white flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <h4 className="font-bold text-lg">Siap menerapkan di kelas?</h4>
+              <p className="text-slate-400 text-sm">Pilih satu strategi dan coba terapkan minggu ini.</p>
+            </div>
+            <button className="px-5 py-2.5 bg-indigo-500 hover:bg-indigo-400 transition-colors rounded-lg font-medium text-sm flex items-center gap-2">
+              Buat RPP Singkat <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+
+        </section>
+      </main>
+    </div>
+  );
+}
